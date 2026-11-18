@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "Multi-Agent AI Browser Studio",
+  "description": "API anahtarı gerektirmeden Gemini, Claude, ChatGPT ve DeepSeek web arayüzlerini çoklu ajan boru hattında çalıştıran Electron masaüstü stüdyosu ve web önizlemesi.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

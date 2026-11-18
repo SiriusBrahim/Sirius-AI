@@ -1,0 +1,123 @@
+{
+  "gemini": {
+    "name": "Google Gemini",
+    "url": "https://gemini.google.com/app",
+    "inputSelectors": [
+      "rich-textarea div.ql-editor[contenteditable='true']",
+      "div.ql-editor[contenteditable='true']",
+      "div[contenteditable='true'][role='textbox']",
+      "textarea[aria-label]"
+    ],
+    "sendButtonSelectors": [
+      "button.send-button:not([disabled])",
+      "button[aria-label*='Send']:not([disabled])",
+      "button[aria-label*='Gönder']:not([disabled])",
+      "button[mattooltip*='Send']:not([disabled])"
+    ],
+    "stopButtonSelectors": [
+      "button[aria-label*='Stop']",
+      "button[aria-label*='Durdur']",
+      "button.stop-button",
+      "mat-icon[fonticon='stop_circle']"
+    ],
+    "responseBubbleSelectors": [
+      "model-response message-content .markdown",
+      "model-response .model-response-text",
+      "message-content .markdown-main-panel"
+    ],
+    "authWallIndicators": [
+      "accounts.google.com",
+      "ServiceLogin",
+      "Sign in"
+    ]
+  },
+  "claude": {
+    "name": "Anthropic Claude",
+    "url": "https://claude.ai/new",
+    "inputSelectors": [
+      "div.ProseMirror[contenteditable='true']",
+      "fieldset div[contenteditable='true']",
+      "div[contenteditable='true'][role='textbox']"
+    ],
+    "sendButtonSelectors": [
+      "button[aria-label='Send Message']:not([disabled])",
+      "button[aria-label*='Send']:not([disabled])",
+      "fieldset button[type='button']:last-of-type:not([disabled])"
+    ],
+    "stopButtonSelectors": [
+      "button[aria-label='Stop Response']",
+      "button[aria-label*='Stop']",
+      "button[aria-label*='Durdur']"
+    ],
+    "responseBubbleSelectors": [
+      "div[data-is-streaming] .font-claude-message",
+      ".font-claude-message",
+      "div[data-testid='assistant-message'] .prose",
+      ".grid-cols-1 .prose"
+    ],
+    "authWallIndicators": [
+      "claude.ai/login",
+      "challenges.cloudflare.com",
+      "Verify you are human"
+    ]
+  },
+  "chatgpt": {
+    "name": "OpenAI ChatGPT",
+    "url": "https://chatgpt.com/",
+    "inputSelectors": [
+      "#prompt-textarea",
+      "div#prompt-textarea[contenteditable='true']",
+      "textarea[data-id='root']",
+      "div[contenteditable='true'][role='textbox']"
+    ],
+    "sendButtonSelectors": [
+      "button[data-testid='send-button']:not([disabled])",
+      "button[aria-label='Send prompt']:not([disabled])",
+      "form button[type='submit']:not([disabled])"
+    ],
+    "stopButtonSelectors": [
+      "button[data-testid='stop-button']",
+      "button[aria-label='Stop streaming']",
+      "button[aria-label*='Stop']"
+    ],
+    "responseBubbleSelectors": [
+      "div[data-message-author-role='assistant'] .markdown",
+      "article[data-testid^='conversation-turn-'] .markdown",
+      "div[data-message-author-role='assistant']"
+    ],
+    "authWallIndicators": [
+      "auth.openai.com",
+      "challenges.cloudflare.com",
+      "Log in"
+    ]
+  },
+  "deepseek": {
+    "name": "DeepSeek Chat",
+    "url": "https://chat.deepseek.com/",
+    "inputSelectors": [
+      "textarea#chat-input",
+      "textarea[placeholder*='DeepSeek']",
+      "textarea",
+      "div[contenteditable='true']"
+    ],
+    "sendButtonSelectors": [
+      "div[role='button'][aria-disabled='false']",
+      "button[aria-label*='Send']:not([disabled])",
+      "div._7436101[role='button']"
+    ],
+    "stopButtonSelectors": [
+      "div[aria-label*='Stop']",
+      "button[aria-label*='Stop']",
+      "div.ds-icon-button[data-testid='stop-button']"
+    ],
+    "responseBubbleSelectors": [
+      "div.ds-markdown",
+      "div.ds-markdown--block",
+      ".markdown-body"
+    ],
+    "authWallIndicators": [
+      "sign_in",
+      "challenges.cloudflare.com"
+    ]
+  }
+}

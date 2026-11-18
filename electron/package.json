@@ -1,0 +1,26 @@
+{
+  "name": "multi-agent-ai-browser-studio",
+  "version": "1.1.0",
+  "description": "API anahtarı gerektirmeden Gemini, Claude, ChatGPT ve DeepSeek web arayüzlerini çoklu ajan boru hattında çalıştıran, proje hafızalı ve canlı önizlemeli Electron masaüstü stüdyosu.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "electron",
+    "multi-agent",
+    "ai-browser",
+    "webcontentsview",
+    "turndown",
+    "sucrase"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "sucrase": "^3.35.0",
+    "turndown": "^7.2.0",
+    "turndown-plugin-gfm": "^1.0.2"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0"
+  }
+}

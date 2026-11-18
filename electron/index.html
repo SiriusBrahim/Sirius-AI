@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multi-Agent AI Browser Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="studio-shell">
+      <header class="topbar">
+        <div class="topbar-brand">Multi-Agent AI Browser Studio</div>
+        <div class="topbar-status" id="pipelineStatusText">
+          <span id="statusBadgeLabel" class="status-text status-idle">Hazır</span>
+          <span class="sep">·</span>
+          <span id="stageMetaText" class="mono">Aşama 0/3</span>
+          <span class="sep">·</span>
+          <span id="timeoutMetaText" class="mono">Süre sınırı 03:00</span>
+        </div>
+        <div class="topbar-actions">
+          <button id="btnOpenMemory" class="btn btn-secondary" type="button">
+            Proje Hafızası
+          </button>
+          <button id="btnOpenSelectors" class="btn btn-secondary" type="button">
+            Seçicileri Düzenle
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace" id="workspaceGrid">
+        <!-- SOL PANEL -->
+        <section class="pane pane-left" id="paneLeft">
+          <div class="pane-section">
+            <div class="section-header">
+              <h2>Proje Çalışma Alanı</h2>
+              <div class="btn-row-tight">
+                <button id="btnSelectFolder" class="btn btn-secondary btn-sm" type="button">
+                  Klasör Seç
+                </button>
+                <button id="btnImportZip" class="btn btn-secondary btn-sm" type="button">
+                  ZIP Yükle
+                </button>
+              </div>
+            </div>
+            <div id="projectPathDisplay" class="path-line mono" title="Seçili proje yolu">
+              Henüz klasör veya ZIP seçilmedi
+            </div>
+            <div id="fileTreeContainer" class="file-tree">
+              <div class="empty-hint">Yerel proje klasörü veya ZIP arşivi yükleyin.</div>
+            </div>
+          </div>
+
+          <div class="pane-section">
+            <div class="section-header">
+              <h2>Proje Fikri ve Ana Görev</h2>
+            </div>
+            <textarea
+              id="projectPromptInput"
+              class="textarea-control"
+              rows="4"
+              placeholder="Geliştirmek istediğiniz uygulama veya oyun görevini yazın..."
+            ></textarea>
+
+            <div class="mode-row">
+              <span class="label-muted">Çalışma Modu</span>
+              <div class="segmented" role="group" aria-label="Çalışma Modu">
+                <button id="btnModeAuto" class="seg-btn active" type="button" data-mode="auto">
+                  Otomatik (4sn)
+                </button>
+                <button id="btnModeManual" class="seg-btn" type="button" data-mode="manual">
+                  Manuel Onay
+                </button>
+              </div>
+            </div>
+
+            <div class="controls-grid">
+              <button id="btnStart" class="btn btn-primary" type="button">Süreci Başlat</button>
+              <button id="btnPause" class="btn btn-secondary" type="button" disabled>Duraklat</button>
+              <button id="btnNextAgent" class="btn btn-accent" type="button" disabled>
+                Sonraki Ajana Aktar
+              </button>
+              <button id="btnRetry" class="btn btn-warning" type="button" hidden>
+                Tekrar Dene
+              </button>
+              <button id="btnReset" class="btn btn-danger-outline" type="button">Sıfırla</button>
+            </div>
+          </div>
+
+          <div class="pane-section pane-grow">
+            <div class="section-header">
+              <h2>Plan Sürümleri</h2>
+              <button id="btnSavePlan" class="btn btn-secondary btn-sm" type="button">
+                Planı Kaydet
+              </button>
+            </div>
+            <div class="plan-tabs">
+              <button class="plan-tab active" type="button" data-plan="v1">plan_v1.md</button>
+              <button class="plan-tab" type="button" data-plan="v2">plan_v2.md</button>
+              <button class="plan-tab" type="button" data-plan="final">plan_final.md</button>
+            </div>
+            <textarea
+              id="planEditor"
+              class="plan-editor mono"
+              placeholder="Aşamalar tamamlandıkça plan çıktıları burada görünür ve düzenlenebilir..."
+            ></textarea>
+          </div>
+        </section>
+
+        <div class="resizer" id="resizerLeft" data-target="left" title="Genişliği ayarla"></div>
+
+        <!-- ORTA PANEL: Ajan Sekmeleri + Canlı Önizleme -->
+        <section class="pane pane-center" id="paneCenter">
+          <div class="agent-tabs-bar">
+            <div class="agent-tabs" id="agentTabs">
+              <button class="agent-tab active" type="button" data-agent="0">
+                1. Mimar · Gemini
+              </button>
+              <button class="agent-tab" type="button" data-agent="1">
+                2. Denetçi · Claude
+              </button>
+              <button class="agent-tab" type="button" data-agent="2">
+                3. Başmühendis · ChatGPT
+              </button>
+              <button class="agent-tab agent-tab-preview" id="btnPreviewTab" type="button">
+                Canlı Önizleme (Derle)
+              </button>
+            </div>
+          </div>
+
+          <div id="agentBrowserPane" class="center-subpane">
+            <div class="url-toolbar">
+              <select id="providerSelect" class="select-control" aria-label="Sağlayıcı Seç">
+                <option value="gemini">Google Gemini</option>
+                <option value="claude">Anthropic Claude</option>
+                <option value="chatgpt">OpenAI ChatGPT</option>
+                <option value="deepseek">DeepSeek Chat</option>
+              </select>
+              <input
+                id="urlInput"
+                class="url-input mono"
+                type="text"
+                value="https://gemini.google.com/app"
+                aria-label="Ajan URL Adresi"
+              />
+              <button id="btnNavigate" class="btn btn-secondary btn-sm" type="button">Git</button>
+              <button id="btnReloadView" class="btn btn-secondary btn-sm" type="button">Yenile</button>
+            </div>
+
+            <div class="role-prompt-box">
+              <div class="role-prompt-header">
+                <span class="label-muted" id="roleTitleLabel">Sistem Rolü Şablonu (Ajan 1: Mimar)</span>
+                <button id="btnToggleRole" class="btn-link" type="button">Daralt</button>
+              </div>
+              <textarea id="rolePromptInput" class="role-textarea" rows="3"></textarea>
+            </div>
+
+            <div class="webview-host" id="webViewHost">
+              <div class="webview-placeholder-hint">
+                WebContentsView arka planda açık tutuluyor. Oturumunuzu bu alanda açabilirsiniz.
+              </div>
+            </div>
+          </div>
+
+          <!-- Canlı Uygulama / Oyun Önizleme Alanı -->
+          <div id="livePreviewPane" class="center-subpane" hidden>
+            <div class="url-toolbar">
+              <span class="label-muted" id="previewStatusLabel">Proje klasörünü derlemek için Derle'ye basın.</span>
+              <div class="btn-row-tight">
+                <button id="btnCompilePreview" class="btn btn-primary btn-sm" type="button">
+                  Derle ve Çalıştır
+                </button>
+              </div>
+            </div>
+            <div class="preview-frame-wrap">
+              <iframe
+                id="livePreviewIframe"
+                title="Canlı Proje Önizlemesi"
+                sandbox="allow-scripts allow-forms allow-modals allow-pointer-lock"
+                class="preview-iframe"
+              ></iframe>
+            </div>
+          </div>
+        </section>
+
+        <div class="resizer" id="resizerRight" data-target="right" title="Genişliği ayarla"></div>
+
+        <!-- SAĞ PANEL -->
+        <section class="pane pane-right" id="paneRight">
+          <div class="pane-section pane-logs">
+            <div class="section-header">
+              <h2>Canlı Süreç Günlüğü</h2>
+              <button id="btnClearLogs" class="btn-link" type="button">Temizle</button>
+            </div>
+            <div id="logContainer" class="log-list mono"></div>
+          </div>
+
+          <div class="pane-section pane-grow">
+            <div class="section-header">
+              <h2>Yakalanan Kod Blokları</h2>
+              <button id="btnManualExtract" class="btn btn-secondary btn-sm" type="button">
+                Yanıtı Tara
+              </button>
+            </div>
+            <div class="target-file-bar">
+              <span class="label-muted">Hedef Dosya</span>
+              <input
+                id="targetFileInput"
+                class="url-input mono"
+                type="text"
+                placeholder="Sol ağaçtan seçin veya yol yazın (ör. src/app.ts)"
+              />
+            </div>
+            <div id="codeBlocksContainer" class="code-blocks-list">
+              <div class="empty-hint">
+                Ajan yanıt verdiğinde algılanan &lt;pre&gt;&lt;code&gt; blokları burada listelenir.
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- MODAL 1: Fark Önizleme -->
+    <div class="modal-backdrop" id="diffModal" hidden>
+      <div class="modal-dialog modal-lg">
+        <div class="modal-header">
+          <div>
+            <h3>Değişiklik Önizlemesi ve Yedekleme</h3>
+            <p class="modal-subtitle mono" id="diffTargetInfo">Hedef: -</p>
+          </div>
+          <button id="btnCloseDiff" class="btn btn-secondary btn-sm" type="button">Kapat</button>
+        </div>
+        <div class="modal-body">
+          <div class="diff-notice">
+            Onayladığınızda mevcut dosyanın zaman damgalı <strong>.bak</strong> yedeği
+            <span class="mono">.studio-backups/</span> klasörüne kaydedilecektir.
+          </div>
+          <div id="diffPreviewContainer" class="diff-container mono"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="btnCancelDiff" class="btn btn-secondary" type="button">Vazgeç</button>
+          <button id="btnConfirmApply" class="btn btn-primary" type="button">
+            Yedek Al ve Dosyaya Yaz
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: Proje Hafızası -->
+    <div class="modal-backdrop" id="memoryModal" hidden>
+      <div class="modal-dialog modal-lg">
+        <div class="modal-header">
+          <div>
+            <h3>Proje Hafızası (.studio-memory.json)</h3>
+            <p class="modal-subtitle">
+              Bu proje klasörüne özel mimari özet, teknoloji yığını ve kısıtlar her ajana aktarılır.
+            </p>
+          </div>
+          <button id="btnCloseMemory" class="btn btn-secondary btn-sm" type="button">Kapat</button>
+        </div>
+        <div class="modal-body">
+          <label class="label-muted">Mimari Özet</label>
+          <textarea id="memSummaryInput" class="textarea-control" rows="3"></textarea>
+          <label class="label-muted">Teknoloji Yığını</label>
+          <input id="memStackInput" class="url-input" type="text" />
+          <label class="label-muted">Kısıtlar ve Kurallar</label>
+          <input id="memConstraintsInput" class="url-input" type="text" />
+        </div>
+        <div class="modal-footer">
+          <button id="btnCancelMemory" class="btn btn-secondary" type="button">İptal</button>
+          <button id="btnSaveMemory" class="btn btn-primary" type="button">Hafızayı Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 3: Harici Seçici -->
+    <div class="modal-backdrop" id="selectorsModal" hidden>
+      <div class="modal-dialog modal-lg">
+        <div class="modal-header">
+          <div>
+            <h3>Harici Seçici Yapılandırması (selectors.json)</h3>
+            <p class="modal-subtitle">
+              Web arayüzleri değiştiğinde CSS seçicilerini buradan güncelleyebilirsiniz.
+            </p>
+          </div>
+          <button id="btnCloseSelectors" class="btn btn-secondary btn-sm" type="button">
+            Kapat
+          </button>
+        </div>
+        <div class="modal-body">
+          <textarea id="selectorsJsonEditor" class="selectors-editor mono" spellcheck="false"></textarea>
+          <div id="selectorsErrorText" class="error-inline" hidden></div>
+        </div>
+        <div class="modal-footer">
+          <button id="btnCancelSelectors" class="btn btn-secondary" type="button">İptal</button>
+          <button id="btnSaveSelectors" class="btn btn-primary" type="button">
+            selectors.json Kaydet
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>
